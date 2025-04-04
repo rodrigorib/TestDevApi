@@ -3,17 +3,13 @@
 // Decompiled with ICSharpCode.Decompiler 8.1.1.7464
 #endregion
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System.Text;
-using System;
-using Microsoft.AspNetCore.Mvc;
 using MinhaApiComSQLite.Data;
 using Microsoft.EntityFrameworkCore;
+using MinhaApiComSQLite.Repository.Contract;
+using MinhaApiComSQLite.Service.Contract;
+using MinhaApiComSQLite.Repository;
+using MinhaApiComSQLite.Service;
 
 namespace MinhaApiComSQLite
 {
@@ -33,6 +29,11 @@ namespace MinhaApiComSQLite
             // Configurar banco de dados SQLite
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+            services.AddScoped<ICategoriaService, CategoriaService>();
+            services.AddScoped<IProdutoRepository, ProdutoRepository>();
+            services.AddScoped<IProdutoService, ProdutoService>();
 
             // Configurar o Swagger
             services.AddEndpointsApiExplorer();
@@ -54,6 +55,14 @@ namespace MinhaApiComSQLite
 
             // Configurar controladores e endpoints
             services.AddControllers();
+
+            // Política Cors
+            services.AddCors(o => o.AddPolicy("PoliticaAllowAnyForDev", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
         }
 
         // Método chamado pela ASP.NET Core para configurar o pipeline HTTP.
@@ -78,6 +87,8 @@ namespace MinhaApiComSQLite
             {
                 endpoints.MapControllers(); // Mapeia controladores
             });
+
+            app.UseCors("PoliticaAllowAnyForDev");
         }
     }
 }
