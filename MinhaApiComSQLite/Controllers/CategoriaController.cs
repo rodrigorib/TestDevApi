@@ -40,7 +40,7 @@ namespace MinhaApiComSQLite.Controllers
         [HttpGet]
         [ProducesResponseType(typeof(CategoriaDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> GetProdutosPorId(int id)
+        public async Task<ActionResult> GetCategoriaPorId(int id)
         {
             try
             {
